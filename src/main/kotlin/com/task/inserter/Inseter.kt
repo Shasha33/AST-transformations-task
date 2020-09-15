@@ -1,10 +1,19 @@
 package com.task.inserter
 
+/**
+ * Stores insertion parameters and perform brackets insertion.
+ * @param isWrapped wrap the whole string into brackets or not
+ * @param isCenter insert empty brackets pair in the middle of the string or not
+ * @param bracketSequence cyclic sequence of brackets to insert
+ */
 class Inserter(
     private val isWrapped: Boolean,
     private val isCenter: Boolean,
     private val bracketSequence: BracketSequence
 ) {
+    /**
+     * Inserts brackets between characters of the string
+     */
     fun insert(string: String): String {
         var prefixBracket = ""
         if (isWrapped) {
@@ -29,24 +38,42 @@ class Inserter(
     }
 }
 
+/**
+ * Cyclic sequence of brackets
+ */
 class BracketSequence private constructor(private val brackets: List<String>) {
     private var index = 0
 
     companion object {
+        /**
+         * List of allowed brackets
+         */
         val allowedSymbols = listOf("{", "[", "(")
+
         private val pairs = mapOf("{" to "}", "[" to "]", "(" to ")")
 
+        /**
+         * Creates an instance from the string representation.
+         * Only opening brackets separated with spaces are accepted
+         */
         fun parseFromString(str: String): BracketSequence? {
             val braces = str.split(" ")
             if (braces.all { allowedSymbols.contains(it) }) return BracketSequence(braces)
             return null
         }
 
-        fun getPair(str: String): String {
-            return pairs[str] ?: ""
+        /**
+         * Returns closing bracket by opening
+         * or an empty string if there is no known pair
+         */
+        fun getPair(bracket: String): String {
+            return pairs[bracket] ?: ""
         }
     }
 
+    /**
+     * Get next bracket in cyclic order
+     */
     fun next(): String {
         return brackets[index++ % brackets.size]
     }

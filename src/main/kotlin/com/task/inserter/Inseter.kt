@@ -9,12 +9,15 @@ package com.task.inserter
 class Inserter(
     private val isWrapped: Boolean,
     private val isCenter: Boolean,
-    private val bracketSequence: BracketSequence
+    bracketSequence: BracketSequence
 ) {
+    private val bracketSequence = bracketSequence.clone()
+
     /**
      * Inserts brackets between characters of the string
      */
     fun insert(string: String): String {
+        bracketSequence.reset()
         var prefixBracket = ""
         if (isWrapped) {
             prefixBracket = bracketSequence.next()
@@ -41,9 +44,7 @@ class Inserter(
 /**
  * Cyclic sequence of brackets
  */
-class BracketSequence private constructor(private val brackets: List<String>) {
-    private var index = 0
-
+class BracketSequence private constructor(private val brackets: List<String>, private var index : Int = 0) {
     companion object {
         /**
          * List of allowed brackets
@@ -75,6 +76,21 @@ class BracketSequence private constructor(private val brackets: List<String>) {
      * Get next bracket in cyclic order
      */
     fun next(): String {
-        return brackets[index++ % brackets.size]
+        index %= brackets.size
+        return brackets[index++]
+    }
+
+    /**
+     * Get a copy of this BracketSequence
+     */
+    fun clone(): BracketSequence {
+        return BracketSequence(brackets.toList(), index)
+    }
+
+    /**
+     * Set current bracket pointer to beginning
+     */
+    fun reset() {
+        index = 0
     }
 }

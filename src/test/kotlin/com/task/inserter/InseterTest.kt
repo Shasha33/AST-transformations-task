@@ -91,4 +91,17 @@ internal class InserterTest {
         assertEqualsAfterInsert(outer = false, center = false, stringSequence = "( [ {",
                 initialString = "12345678", resultString = "1(2[3{45}6]7)8")
     }
+
+    @Test
+    fun severalInsertionsWithOneInstanceTest() {
+        val charSequence = BracketSequence.parseFromString("{ ( [")
+        val inserter = Inserter(true, isCenter = true, bracketSequence = charSequence!!)
+
+        assertEquals("{a}", inserter.insert("a"))
+        assertEquals("{a}", inserter.insert("a"))
+        assertEquals("{a()a}", inserter.insert("aa"))
+        assertEquals("{a(a)a}", inserter.insert("aaa"))
+        assertEquals("{a(a[]a)a}", inserter.insert("aaaa"))
+        assertEquals("{a(a[a{}a]a)a}", inserter.insert("aaaaaa"))
+    }
 }

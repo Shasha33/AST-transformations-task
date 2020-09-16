@@ -1,5 +1,7 @@
 package com.task.inserter
 
+import kotlin.text.StringBuilder
+
 /**
  * Stores insertion parameters and perform brackets insertion.
  * @param isWrapped wrap the whole string into brackets or not
@@ -12,32 +14,35 @@ class Inserter(
     bracketSequence: BracketSequence
 ) {
     private val bracketSequence = bracketSequence.clone()
+    private val insertionBuffer = StringBuilder()
 
     /**
      * Inserts brackets between characters of the string
      */
     fun insert(string: String): String {
         bracketSequence.reset()
+        insertionBuffer.clear()
         var prefixBracket = ""
         if (isWrapped) {
             prefixBracket = bracketSequence.next()
         }
-        val innerString = unwrappedInsert(string)
-        return prefixBracket + innerString + BracketSequence.getPair(prefixBracket)
+        unwrappedInsert(string)
+        return prefixBracket + insertionBuffer.toString() + BracketSequence.getPair(prefixBracket)
     }
 
-    private fun unwrappedInsert(string: String, index: Int = 0): String {
+    private fun unwrappedInsert(string: String, index: Int = 0) {
         val pairIndex = string.length - index - 1
         if (index >= pairIndex || (pairIndex == index + 1 && !isCenter)) {
-            return string.substring((index..pairIndex))
+            insertionBuffer.append(string.substring((index..pairIndex)))
+            return
         }
 
         val brace = bracketSequence.next()
         val pairBrace = BracketSequence.getPair(brace)
 
-        return (string[index] + brace
-                + unwrappedInsert(string, index + 1)
-                + pairBrace + string[pairIndex])
+        insertionBuffer.append(string[index] + brace)
+        unwrappedInsert(string, index + 1)
+        insertionBuffer.append(pairBrace + string[pairIndex])
     }
 }
 
